@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#eaf5ff"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="assets/icon-192.svg">
+<title>Little Story Steps</title>
+<style>
+:root{--ink:#18345f;--blue:#2676d2;--gold:#ffe6a0;--green:#e5f7df;--pink:#ffe5ef}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#f3f8ff,#fff9ed);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink)}
+header{padding:13px clamp(12px,4vw,34px);display:flex;align-items:center;justify-content:space-between;gap:12px;background:#ffffffed;position:sticky;top:0;z-index:3;border-bottom:1px solid #d9e7fa}
+.brand{font-weight:850;font-size:clamp(19px,3vw,27px)}.sub{font-size:13px;color:#58708f}
+button{border:0;border-radius:15px;padding:11px 14px;font:inherit;font-weight:750;cursor:pointer;background:#e7f1ff;color:#17477e;box-shadow:0 2px 0 #c7d9f1}
+button:focus-visible{outline:4px solid #ffbf37;outline-offset:2px}.primary{background:#2676d2;color:white}.gold{background:#ffcf55;color:#493300}.green{background:#d9f2d1;color:#20552a}.pink{background:#ffdfec;color:#8b2854}
+main{max-width:1180px;margin:18px auto;padding:0 14px 40px}h1{font-size:clamp(25px,4vw,36px);text-align:center;margin:10px 0 5px}.intro{text-align:center;color:#59718e;margin:0 0 16px}
+.storytabs{display:flex;gap:8px;overflow-x:auto;padding:3px 2px 12px}.storytabs button{white-space:nowrap;flex:1;min-width:max-content}.storytabs button.active{background:#2676d2;color:white}
+.progress{display:flex;gap:7px;justify-content:center;margin:8px 0 18px}.dot{width:34px;height:9px;border-radius:10px;background:#d7e4f4}.dot.active{background:#2676d2}
+.layout{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(270px,.85fr);gap:16px}.panel{background:#fff;border:1px solid #dce8f7;border-radius:22px;padding:15px;box-shadow:0 5px 18px #284d7410}
+.scene{width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;border-radius:17px;display:block;background:#eaf1f8}
+.scene-count{font-weight:800;color:#2676d2;margin:11px 0 4px}.storyline{font-size:clamp(20px,2.6vw,25px);line-height:1.35;font-weight:750;margin:4px 0 12px;min-height:66px}
+.controls{display:flex;flex-wrap:wrap;gap:8px}.controls button{flex:1}
+.side h2{font-size:21px;margin:2px 0 12px}.question{background:#f3f7ff;border-radius:14px;padding:11px;margin:8px 0;font-size:17px;line-height:1.35}.question small{display:block;color:#647b98;font-size:13px;margin-top:5px}
+.reveal{margin-top:9px;background:#fff7d9;border-radius:13px;padding:12px;line-height:1.45}
+.section{margin-top:15px}.section h2{font-size:21px;margin:0 0 8px}.steps{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.step{background:#fff;border:2px solid #d9e6f5;border-radius:13px;padding:5px;min-width:0;text-align:center}.step img{width:100%;aspect-ratio:1.35;object-fit:cover;border-radius:8px}.step span{display:block;font-size:13px;font-weight:800;margin-top:3px}.step.selected{border-color:#2676d2;background:#eaf4ff}
+.retell{background:#e9f7e4;border:1px solid #c7e8bd;border-radius:21px;padding:15px;margin-top:16px}.retell h2{margin:0 0 6px}.starter{background:#fff;border-radius:11px;padding:9px;margin:6px 0;font-size:16px}
+.parent{background:#fff1f6;border:1px solid #f4cbdc;border-radius:21px;padding:15px;margin-top:16px;line-height:1.5}.hidden{display:none!important}.muted{color:#657b95;font-size:14px}
+@media(max-width:760px){.layout{grid-template-columns:1fr}.side{order:2}.storytabs button{flex:0 0 auto}.step span{font-size:11px}header{position:static}}
+</style></head><body>
+<header><div><div class="brand">📚 Little Story Steps</div><div class="sub">Look • Listen • Talk • Retell</div></div><button id="install" class="primary" hidden>Install app</button></header>
+<main>
+<nav class="storytabs" id="storyTabs" aria-label="Choose a story"></nav>
+<h1 id="title">Rohan and His Red Ball</h1><p class="intro">Look at the pictures. Listen, talk about what happened, and tell the story in your own words.</p>
+<div class="progress" aria-label="Story progress"><span class="dot active"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+<div class="layout">
+<section class="panel">
+<img id="mainImage" class="scene" src="assets/scene1.jpg" alt="Story picture">
+<div class="scene-count" id="sceneCount">PICTURE 1 OF 5</div><p class="storyline" id="storyLine">Rohan had a red ball.</p>
+<div class="controls"><button id="listen" class="primary">🔊 Listen</button><button id="hideText">🙈 Hide words</button><button id="prev">← Back</button><button id="next" class="gold">Next →</button></div>
+</section>
+<aside class="panel side"><h2>💬 Talk about this picture</h2>
+<div class="question" id="q1"></div><div class="question" id="q2"></div><div class="question" id="q3"></div>
+<div class="reveal" id="modelBox"><b>Helpful model:</b><div id="model"></div></div><button id="showModel" class="green" style="margin-top:9px;width:100%">Hide sentence model</button>
+</aside></div>
+<section class="section panel"><h2>🧩 Put the story in order</h2><p class="muted">Tap a picture to look at it again. Say what happened first, next, and last.</p><div class="steps" id="steps"></div></section>
+<section class="retell"><h2>🎤 Your turn: tell the story</h2><p>Use the pictures as clues. It is okay to tell just one idea at a time.</p>
+<div class="starter">🟦 <b>First…</b> <span id="st1"></span></div><div class="starter">🟧 <b>Then…</b> <span id="st2"></span></div>
+<div class="starter">🟪 <b>Next…</b> <span id="st3"></span></div><div class="starter">🟩 <b>After that…</b> <span id="st4"></span></div>
+<div class="starter">🩷 <b>Finally…</b> <span id="st5"></span></div>
+<div class="controls"><button id="retellMode" class="pink">🙈 Hide words and practise</button><button id="listenAll">🔊 Hear the whole story</button></div>
+<p id="retellPrompt" class="muted" aria-live="polite">Parent prompt: “Tell me about the pictures.” Wait quietly for 5–10 seconds.</p></section>
+<section class="parent"><h2>🌱 Parent guide: help without turning it into a test</h2>
+<ol><li><b>Read together first.</b> Talk about the pictures; do not demand a full retell on the first reading.</li>
+<li><b>Use a prompt ladder:</b> wait → open question → two choices → first few words → model the sentence.</li>
+<li><b>Accept small attempts.</b> A word, gesture, or point is communication. Expand gently: “Yes, red ball!”</li>
+<li><b>Retell together.</b> You tell one picture, then invite your child to tell the next. Gradually reduce your help.</li>
+<li><b>Keep it short and positive.</b> Five to eight minutes is plenty.</li></ol>
+<p><b>Look for progress:</b> identifying a character, naming an action, answering “what happened?”, and putting two or three events in order. Independent full retelling comes later.</p></section>
+</main>
+<script>
+const stories=[{"title": "Rohan and His Red Ball", "scenes": [["Rohan had a red ball.", "Who can you see?", "What does Rohan have?", "What colour is the ball?", "Rohan has a red ball."], ["He went to the park with his dog, Bruno.", "Where did Rohan go?", "Who went with him?", "What is the dog's name?", "Rohan went to the park with his dog, Bruno."], ["Rohan threw the ball.", "What did Rohan do?", "What did he throw?", "Where is the ball going?", "Rohan threw the red ball."], ["Bruno ran, got the ball, and brought it back.", "What did Bruno do?", "What did Bruno get?", "Where did Bruno take the ball?", "Bruno got the ball and brought it back."], ["Rohan was happy. He played with Bruno again.", "How did Rohan feel?", "Who did he play with?", "What happened at the end?", "Rohan was happy and played with Bruno again."]]}, {"title": "Rohan Goes to the Playground", "scenes": [["Rohan goes to the playground with Buddy.", "Who is in the story?", "Where do they go?", "Who goes with Rohan?", "Rohan goes to the playground with Buddy."], ["Rohan swings on the swing.", "What does Rohan do?", "Where does he sit?", "Is he on the swing or slide?", "Rohan swings on the swing."], ["Rohan asks to go down the slide. Buddy watches.", "What does Rohan ask to do?", "Who watches him?", "Where does he slide?", "Rohan goes down the slide. Buddy watches."], ["Rohan gives Buddy some water.", "What does Rohan give Buddy?", "Why does Buddy need water?", "Who helps Buddy?", "Rohan gives Buddy some water."], ["They rest together. Rohan is happy.", "What do they do at the end?", "How does Rohan feel?", "Who rests with him?", "Rohan rests with Buddy. He is happy."]]}, {"title": "Rohan Helps at Home", "scenes": [["Mom asks Rohan to help at home.", "Who is in the story?", "Where are they?", "What does Mom ask?", "Mom asks Rohan to help at home."], ["Rohan washes the dishes.", "What does Rohan wash?", "What is he doing?", "Where are the dishes?", "Rohan washes the dishes."], ["He folds the clean clothes.", "What does Rohan fold?", "Are the clothes clean or dirty?", "What does he do next?", "Rohan folds the clean clothes."], ["Rohan puts the clothes in the basket.", "Where does he put the clothes?", "What is he carrying?", "Who is helping at home?", "Rohan puts the clothes in the basket."], ["Mom says, “Thank you, Rohan!” Rohan feels proud.", "What does Mom say?", "How does Rohan feel?", "Why is Mom happy?", "Mom thanks Rohan. He feels proud."]]}, {"title": "Rohan at the Zoo", "scenes": [["Rohan and Buddy go to the zoo.", "Who goes to the zoo?", "Where do they go?", "Who goes with Rohan?", "Rohan and Buddy go to the zoo."], ["They see a big elephant.", "What animal do they see?", "Is the elephant big or small?", "What colour is it?", "They see a big elephant."], ["They see a tall giraffe.", "What animal do they see next?", "Is the giraffe tall or short?", "What is long on the giraffe?", "They see a tall giraffe."], ["They see a playful monkey.", "What animal do they see now?", "What is the monkey doing?", "Is the monkey playful?", "They see a playful monkey."], ["Rohan has a great day at the zoo!", "How does Rohan feel?", "Which animals did he see?", "Where did he go?", "Rohan has a great day at the zoo."]]}, {"title": "Rohan Gets Ready for a Race", "scenes": [["Rohan wants to join a fun run.", "What does Rohan want to do?", "Where is he going?", "Is it a race or a picnic?", "Rohan wants to join a fun run."], ["He practises running in the park.", "How does Rohan prepare?", "Where does he practise?", "Who runs with him?", "Rohan practises running in the park."], ["He drinks water and rests.", "What does Rohan drink?", "Why does he rest?", "What should we drink after running?", "Rohan drinks water and rests."], ["Rohan runs in the fun run.", "What happens at the race?", "Who is running?", "How does he keep going?", "Rohan runs in the fun run."], ["Rohan finishes the race! He feels proud and happy.", "What happens at the end?", "How does Rohan feel?", "What did he finish?", "Rohan finishes the race. He feels proud and happy."]]}];
+let storyIndex=0,sceneIndex=0,wordsVisible=true,modelVisible=true;
+const $=id=>document.getElementById(id);
+const order=["First","Then","Next","After that","Finally"];
+function imagePath(i){return storyIndex===0?`assets/scene${i+1}.jpg`:`assets/story${storyIndex+1}_scene${i+1}.jpg`}
+function render(){
+ const story=stories[storyIndex],s=story.scenes[sceneIndex];
+ $("title").textContent=story.title;$("mainImage").src=imagePath(sceneIndex);$("mainImage").alt=`Picture ${sceneIndex+1}: ${s[0]}`;
+ $("sceneCount").textContent=`STORY ${storyIndex+1} OF 5 • PICTURE ${sceneIndex+1} OF 5`;
+ $("storyLine").textContent=s[0];$("storyLine").classList.toggle("hidden",!wordsVisible);
+ ["q1","q2","q3"].forEach((id,i)=>$(id).innerHTML=s[i+1]+`<small>${["Give time to look and think.","Point to the picture if needed.","Accept a word, gesture, or full sentence."][i]}</small>`);
+ $("model").textContent="“"+s[4]+"”";$("modelBox").classList.toggle("hidden",!modelVisible);$("showModel").textContent=modelVisible?"Hide sentence model":"Show me a sentence";
+ $("prev").disabled=sceneIndex===0;$("next").textContent=sceneIndex===4?"Restart story ↻":"Next →";
+ document.querySelectorAll(".dot").forEach((d,i)=>d.classList.toggle("active",i<=sceneIndex));
+ document.querySelectorAll(".step").forEach((d,i)=>{d.classList.toggle("selected",i===sceneIndex);d.querySelector("img").src=imagePath(i);});
+ for(let i=0;i<5;i++)$("st"+(i+1)).textContent=story.scenes[i][4].split(" ").slice(0,5).join(" ")+"…";
+ document.querySelectorAll(".storytabs button").forEach((b,i)=>b.classList.toggle("active",i===storyIndex));
+}
+function getFemaleVoice(){
+ if(!("speechSynthesis"in window))return null;
+ const voices=speechSynthesis.getVoices();
+ const preferred=voices.find(v=>/female|woman|samantha|victoria|karen|moira|tessa|zira|susan|ava|allison|siri.*female/i.test(v.name));
+ if(preferred)return preferred;
+ return voices.find(v=>/^en/i.test(v.lang)&&/female|woman|samantha|victoria|karen|moira|tessa|zira|susan|ava|allison/i.test(v.name))||null;
+}
+function speak(t,voice=null){
+ if(!("speechSynthesis"in window)){alert("Read the sentence aloud together.");return;}
+ speechSynthesis.cancel();
+ const u=new SpeechSynthesisUtterance(t);u.rate=.82;u.pitch=voice?1.08:1.05;
+ if(voice)u.voice=voice;
+ speechSynthesis.speak(u);
+}
+function speakCurrentScene(){
+ const scene=stories[storyIndex].scenes[sceneIndex][0];
+ if(storyIndex===2 && sceneIndex===0){
+   const v=getFemaleVoice();
+   if(v)speak("Rohan, can you help me at home?",v);
+   else speak("Rohan, can you help me at home?");
+ }else if(storyIndex===2 && sceneIndex===4){
+   const v=getFemaleVoice();
+   if(v){
+     const a=new SpeechSynthesisUtterance("Thank you, Rohan!");
+     a.voice=v;a.rate=.82;a.pitch=1.08;
+     const b=new SpeechSynthesisUtterance("Rohan feels proud.");
+     b.rate=.82;b.pitch=1.05;
+     speechSynthesis.cancel();speechSynthesis.speak(a);speechSynthesis.speak(b);
+   }else speak("Thank you, Rohan! Rohan feels proud.");
+ }else speak(scene);
+}
+function makeTabs(){stories.forEach((s,i)=>{let b=document.createElement("button");b.textContent=`${i+1}. ${s.title}`;b.onclick=()=>{storyIndex=i;sceneIndex=0;wordsVisible=true;modelVisible=true;render()};$("storyTabs").appendChild(b)})}
+function makeSteps(){for(let i=0;i<5;i++){let b=document.createElement("button");b.className="step";b.innerHTML=`<img alt="" src="assets/scene${i+1}.jpg"><span>${order[i]}</span>`;b.onclick=()=>{sceneIndex=i;render();window.scrollTo({top:0,behavior:"smooth"})};$("steps").appendChild(b)}}
+$("prev").onclick=()=>{sceneIndex=Math.max(0,sceneIndex-1);render()};
+$("next").onclick=()=>{sceneIndex=sceneIndex===4?0:sceneIndex+1;render()};
+$("listen").onclick=()=>speakCurrentScene();
+$("hideText").onclick=()=>{wordsVisible=!wordsVisible;$("hideText").textContent=wordsVisible?"🙈 Hide words":"👀 Show words";render()};
+$("showModel").onclick=()=>{modelVisible=!modelVisible;render()};
+$("listenAll").onclick=()=>{
+ if(storyIndex!==2){speak(stories[storyIndex].scenes.map(s=>s[0]).join(" "));return;}
+ speechSynthesis.cancel();
+ const v=getFemaleVoice();
+ const parts=[
+  ["Mom asks Rohan to help at home.",null],
+  ["Rohan washes the dishes.",null],
+  ["He folds the clean clothes.",null],
+  ["Rohan puts the clothes in the basket.",null],
+  ["Thank you, Rohan!",v],
+  ["Rohan feels proud.",null]
+ ];
+ parts.forEach(([t,voice])=>{const u=new SpeechSynthesisUtterance(t);u.rate=.82;u.pitch=voice?1.08:1.05;if(voice)u.voice=voice;speechSynthesis.speak(u)});
+};
+$("retellMode").onclick=()=>{wordsVisible=false;modelVisible=false;render();$("retellPrompt").textContent="Try: “Tell me what happened first.” Wait. If needed, give just the first word as a clue."};
+makeTabs();makeSteps();render();
+if("serviceWorker"in navigator&&location.protocol!=="file:")navigator.serviceWorker.register("./sw.js").catch(()=>{});
+let installEvent;window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();installEvent=e;$("install").hidden=false});
+$("install").onclick=async()=>{if(installEvent){installEvent.prompt();await installEvent.userChoice;installEvent=null;$("install").hidden=true}};
+</script></body></html>
